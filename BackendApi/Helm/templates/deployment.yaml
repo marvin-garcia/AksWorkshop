@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  labels:
+    app: {{ .Values.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+        - name: {{ .Values.image.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.container.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.probes.readiness.port }}
+              path: {{ .Values.probes.readiness.endpoint }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.probes.liveness.port }}
+              path: {{ .Values.probes.liveness.endpoint }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+          env:
+          - name: mongodb
+            value: {{ .Values.mongo.connectionstring }}
+          - name: mongodatabase
+            value: {{ .Values.mongo.database }}
+          - name: mongocollection
+            value: {{ .Values.mongo.collection }}
+          - name: "ApplicationInsights__InstrumentationKey"
+            value: {{ .Values.appinsights.key }}

@@ -1,0 +1,47 @@
+# Default values for backend-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: backend
+replicaCount: 2
+
+deployment:
+  name: backend
+
+image:
+  name: backend-api
+  repository: aksworkshopregistry.azurecr.io/aksworkshop/backend-api
+  tag: 1
+  pullPolicy: Always
+
+probes:
+  liveness:
+    port: 80
+    endpoint: /swagger/index.html
+  readiness:
+    port: 80
+    endpoint: /swagger/index.html
+
+container:
+  port: 80
+
+service:
+  type: LoadBalancer
+  port: 80
+  name: backend
+
+resources: 
+  limits:
+   cpu: 100m
+   memory: 128Mi
+  requests:
+   cpu: 100m
+   memory: 128Mi
+
+mongo:
+  connectionstring: __replace__
+  database: __replace__
+  collection: __replace__
+
+appinsights:
+  key: __replace__
