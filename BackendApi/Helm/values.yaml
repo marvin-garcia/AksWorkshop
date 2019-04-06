@@ -31,8 +31,8 @@ resources:
 
 env:
   mongoconnectionstring: __replace__
-  mongodatabase: todoitems
-  mongocollection: todolist
+  mongodatabase: __replace__
+  mongocollection: __replace__
   appinsightskey: __replace__
 
 service:
