@@ -38,5 +38,5 @@ env:
 service:
   name: backend-svc
   type: ClusterIP
-  port: 8080
+  port: 80
   targetport: 80
