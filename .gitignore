@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+/MultitierApi/azds.yaml
+/MultitierApi/Dockerfile.develop

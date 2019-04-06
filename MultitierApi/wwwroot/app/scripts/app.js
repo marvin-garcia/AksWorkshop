@@ -10,7 +10,7 @@ angular.module('todoApp', ['ngRoute'])
 
     $routeProvider.when("/Home", {
         controller: "todoListCtrl",
-        templateUrl: "/App/TodoList.html",
+        templateUrl: "/TodoList.html",
     }).otherwise({ redirectTo: "/Home" });
 
     }]);
