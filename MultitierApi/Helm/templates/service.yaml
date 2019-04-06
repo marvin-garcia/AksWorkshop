@@ -4,7 +4,6 @@ metadata:
   name: {{ .Values.service.name }}
   labels:
     app: {{ .Values.name }}
-    release: {{ .Release.Name }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -14,4 +13,3 @@ spec:
       name: http
   selector:
     app: {{ .Values.name }}
-    release: {{ .Release.Name }}
