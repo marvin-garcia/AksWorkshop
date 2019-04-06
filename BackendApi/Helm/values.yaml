@@ -34,10 +34,8 @@ resources:
    cpu: 500m
    memory: 256Mi
 
-mongo:
-  connectionstring: mongodb://user:Passw0rd!@todolist-mongo-mongodb.default.svc.cluster.local:27017/
-  database: todoitems
-  collection: todolist
-
-appinsights:
-  key: b1e8f3c6-bd36-47bb-8de9-221b9848f78f
+env:
+  mongoconnectionstring: mongodb://user:Passw0rd!@todolist-mongo-mongodb.default.svc.cluster.local:27017/
+  mongodatabase: todoitems
+  mongocollection: todolist
+  appinsightskey: b1e8f3c6-bd36-47bb-8de9-221b9848f78f

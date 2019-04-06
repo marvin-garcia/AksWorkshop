@@ -39,10 +39,10 @@ spec:
               cpu: {{ .Values.resources.limits.cpu }}
           env:
           - name: mongodb
-            value: {{ .Values.mongo.connectionstring }}
+            value: {{ .Values.env.mongoconnectionstring }}
           - name: mongodatabase
-            value: {{ .Values.mongo.database }}
+            value: {{ .Values.env.mongodatabase }}
           - name: mongocollection
-            value: {{ .Values.mongo.collection }}
+            value: {{ .Values.env.mongocollection }}
           - name: "ApplicationInsights__InstrumentationKey"
-            value: {{ .Values.appinsights.key }}
+            value: {{ .Values.env.appinsightskey }}
