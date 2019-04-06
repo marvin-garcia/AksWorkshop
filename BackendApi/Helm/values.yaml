@@ -2,12 +2,12 @@ name: backend
 replicaCount: 2
 
 deployment:
-  name: backend
+  name: backend-deploy
 
 image:
   name: backend-api
-  repository: aksworkshopregistry.azurecr.io/aksworkshop/backend-api
-  tag: 1
+  repository: __replace__
+  tag: __replace__
   pullPolicy: Always
 
 probes:
@@ -21,11 +21,6 @@ probes:
 container:
   port: 80
 
-service:
-  type: ClusterIP
-  port: 80
-  name: backend
-
 resources: 
   requests:
    cpu: 100m
@@ -35,7 +30,13 @@ resources:
    memory: 256Mi
 
 env:
-  mongoconnectionstring: mongodb://user:Passw0rd!@todolist-mongo-mongodb.default.svc.cluster.local:27017/
+  mongoconnectionstring: __replace__
   mongodatabase: todoitems
   mongocollection: todolist
-  appinsightskey: b1e8f3c6-bd36-47bb-8de9-221b9848f78f
+  appinsightskey: __replace__
+
+service:
+  name: backend-svc
+  type: ClusterIP
+  port: 8080
+  targetport: 80

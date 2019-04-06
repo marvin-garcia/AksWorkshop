@@ -4,12 +4,15 @@ metadata:
   name: {{ .Values.service.name }}
   labes:
     app: {{ .Values.name }}
-  # namespace: dev
+    release: {{ .Release.Name }}
 spec:
   type: {{ .Values.service.type }}
-  selector:
-    app: {{ .Values.name }}
   ports:
   - protocol: TCP
     port: {{ .Values.service.port }}
-    targetPort: {{ .Values.container.port }}
+    targetPort: {{ .Values.service.targetport }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.name }}
+    release: {{ .Release.Name }}
