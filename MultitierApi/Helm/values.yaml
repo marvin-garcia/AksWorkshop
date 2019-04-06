@@ -6,7 +6,7 @@ deployment:
 
 image:
   name: frontend-api
-  repository: aksworkshopregistry.azurecr.io/aksworkshop/frontend-api
+  repository: __replace__
   tag: __replace__
   pullPolicy: Always
 
@@ -30,14 +30,15 @@ resources:
    memory: 256Mi
 
 env:
-  backendurl: backend-deploy.default.svc.cluster.local:8080
-  appinsightskey: b1e8f3c6-bd36-47bb-8de9-221b9848f78f
+  backendurl: __replace__
+  appinsightskey: __replace__
 
 service:
   name: frontend-svc
   type: ClusterIP
   port: 80
+  targetport: 80
 
 ingress:
   name: frontend-ingress
-  host: aksworkshopfrontend.centralus.azure.com
+  host: __replace__
