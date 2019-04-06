@@ -1,0 +1,19 @@
+# Test Limits - Forbidden due to assignment of CPU too low
+kubectl run nginx-limittest --image=nginx --restart=Never --replicas=1 --port=80 --requests='cpu=100m,memory=256Mi' -n dev
+
+# Test Limits - Pass due to automatic assignment within limits via defaults
+kubectl run nginx-limittest --image=nginx --restart=Never --replicas=1 --port=80 -n dev
+
+# Check running pod and dev Namespace Allocations
+kubectl get po -n dev
+kubectl describe ns dev
+
+# Test Quotas - Forbidden due to memory quota exceeded
+kubectl run nginx-quotatest --image=nginx --restart=Never --replicas=1 --port=80 --requests='cpu=500m,memory=1Gi' -n dev
+
+# Test Quotas - Pass due to memory within quota
+kubectl run nginx-quotatest --image=nginx --restart=Never --replicas=1 --port=80 --requests='cpu=500m,memory=512Mi' -n dev
+
+# Check running pod and dev Namespace Allocations
+kubectl get po -n dev
+kubectl describe ns dev
