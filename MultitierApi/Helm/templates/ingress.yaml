@@ -11,6 +11,6 @@ spec:
     http:
       paths:
       - path: /
-        frontend:
+        backend:
           serviceName: {{ .Values.service.name }}
           servicePort: 80
