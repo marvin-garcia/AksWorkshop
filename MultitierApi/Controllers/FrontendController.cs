@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using FrontendApi.Repositories;
 using FrontendApi.Models;
+using System;
 
 namespace FrontendApi.Controllers
 {
@@ -19,59 +20,94 @@ namespace FrontendApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<TodoItem>> GetAll()
         {
-            var items = await _todo.GetAll();
-            return items;
+            try
+            {
+                var items = await _todo.GetAll();
+                return items;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpGet("{id:length(24)}", Name = "GetTodo")]
         public async Task<IActionResult> GetById(string id)
         {
-            var item = await _todo.Get(id);
-            
-            if (item == null)
-                return NotFound();
+            try
+            {
+                var item = await _todo.Get(id);
 
-            return new ObjectResult(item);
+                if (item == null)
+                    return NotFound();
+
+                return new ObjectResult(item);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
         
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TodoItem item)
         {
-            if (item == null)
-                return BadRequest();
+            try
+            {
+                if (item == null)
+                    return BadRequest();
 
-            var itemOut = await _todo.Create(item);
+                var itemOut = await _todo.Create(item);
 
-            //return CreatedAtRoute("GetTodo", new { id = item.Id }, itemOut);
-            return await GetById(itemOut.Id);
+                //return CreatedAtRoute("GetTodo", new { id = item.Id }, itemOut);
+                return await GetById(itemOut.Id);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpPut("{id:length(24)}")]
         public async Task<IActionResult> Update(string id, [FromBody] TodoItem item)
         {
-            if (item == null || item.Id != id)
-                return BadRequest();
+            try
+            {
+                if (item == null || item.Id != id)
+                    return BadRequest();
 
-            var todo = await _todo.Get(id);
-            if (todo == null)
-                return NotFound();
+                var todo = await _todo.Get(id);
+                if (todo == null)
+                    return NotFound();
 
-            todo.IsComplete = item.IsComplete;
-            todo.Name = item.Name;
+                todo.IsComplete = item.IsComplete;
+                todo.Name = item.Name;
 
-            await _todo.Update(id, todo);
-            return new NoContentResult();
+                await _todo.Update(id, todo);
+                return new NoContentResult();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var todo = await _todo.Get(id);
-            if (todo == null)
-                return NotFound();
+            try
+            {
+                var todo = await _todo.Get(id);
+                if (todo == null)
+                    return NotFound();
 
-            await _todo.Remove(id);
-            return new NoContentResult();
+                await _todo.Remove(id);
+                return new NoContentResult();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }
