@@ -24,7 +24,7 @@ namespace FrontendApi.Repositories
         public TodoRepository(IConfiguration configuration, IHttpClient httpClient)
         {
             _httpClient = httpClient;
-            _backendUrl = configuration["backendurl"];
+            _backendUrl = $"{configuration["backendurl"]}/api/todo";
         }
 
         public async Task<IEnumerable<TodoItem>> GetAll()

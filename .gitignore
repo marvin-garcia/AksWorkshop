@@ -332,3 +332,4 @@ ASALocalRun/
 /MultitierApi/Dockerfile.develop
 /MultitierApi/BackendApi/azds.yaml
 /MultitierApi/BackendApi/Dockerfile.develop
+/MultitierApi/BackendApi/charts/backendapi

@@ -10,11 +10,11 @@ namespace BackendApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BackendController : Controller
+    public class TodoController : Controller
     {
         private readonly IMongoDbRepository _mongodb;
 
-        public BackendController(IMongoDbRepository mongoDbRepository)
+        public TodoController(IMongoDbRepository mongoDbRepository)
         {
             try
             {
