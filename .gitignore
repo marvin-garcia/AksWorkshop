@@ -330,3 +330,5 @@ ASALocalRun/
 .mfractor/
 /MultitierApi/azds.yaml
 /MultitierApi/Dockerfile.develop
+/MultitierApi/BackendApi/azds.yaml
+/MultitierApi/BackendApi/Dockerfile.develop

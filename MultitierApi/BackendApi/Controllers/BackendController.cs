@@ -16,67 +16,109 @@ namespace BackendApi.Controllers
 
         public BackendController(IMongoDbRepository mongoDbRepository)
         {
-            _mongodb = mongoDbRepository;
-            if (_mongodb.Get().Count() == 0)
-                _mongodb.Create(new TodoItem()
-                {
-                    Name = "Item1",
-                    IsComplete = false,
-                });
+            try
+            {
+                _mongodb = mongoDbRepository;
+                if (_mongodb.Get().Count() == 0)
+                    _mongodb.Create(new TodoItem()
+                    {
+                        Name = "Item1",
+                        IsComplete = false,
+                    });
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpGet]
         public IEnumerable<TodoItem> GetAll()
         {
-            return _mongodb.Get();
+            try
+            {
+                return _mongodb.Get();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpGet("{id:length(24)}", Name = "GetTodo")]
         public IActionResult GetById(string id)
         {
-            var item = _mongodb.Get(id);
-            if (item == null)
-                return NotFound();
+            try
+            {
+                var item = _mongodb.Get(id);
+                if (item == null)
+                    return NotFound();
 
-            return new ObjectResult(item);
+                return new ObjectResult(item);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpPost]
         public IActionResult Create([FromBody] TodoItem item)
         {
-            if (item == null)
-                return BadRequest();
+            try
+            {
+                if (item == null)
+                    return BadRequest();
 
-            _mongodb.Create(item);
-            return CreatedAtRoute("GetTodo", new { id = item.Id }, item);
+                _mongodb.Create(item);
+                return CreatedAtRoute("GetTodo", new { id = item.Id }, item);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, [FromBody] TodoItem item)
         {
-            if (item == null || item.Id != id)
-                return BadRequest();
+            try
+            {
+                if (item == null || item.Id != id)
+                    return BadRequest();
 
-            var todo = _mongodb.Get(id);
-            if (todo == null)
-                return NotFound();
+                var todo = _mongodb.Get(id);
+                if (todo == null)
+                    return NotFound();
 
-            todo.IsComplete = item.IsComplete;
-            todo.Name = item.Name;
+                todo.IsComplete = item.IsComplete;
+                todo.Name = item.Name;
 
-            _mongodb.Update(id, todo);
-            return new NoContentResult();
+                _mongodb.Update(id, todo);
+                return new NoContentResult();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)
         {
-            var todo = _mongodb.Get(id);
-            if (todo == null)
-                return NotFound();
+            try
+            {
+                var todo = _mongodb.Get(id);
+                if (todo == null)
+                    return NotFound();
 
-            _mongodb.Remove(id);
-            return new NoContentResult();
+                _mongodb.Remove(id);
+                return new NoContentResult();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }
