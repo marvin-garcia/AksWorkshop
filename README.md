@@ -25,12 +25,16 @@ This is a walkthrough to create an Azure Kubernetes Service cluster in a product
 
 ## Create virtual network
 
-In real life situations there will already be a defined network space to allocate the AKS cluster. For this exercise we are going to create an address space like the following:
+By default, AKS clusters creates uses [kubenet](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#kubenet) to create the virtual network and subnet, but that is rarely the case in real life scenarios. Most of the times the cluster will need to coexist and interact with other services and more importantly be governed by company networking policies. The alternative is to use [Azure Container Networking Interface (CNI)](https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni), where every pod gets an IP address from a subnet and can be accessed directly. This requires the virtual network address space to be carefully planned in advance. You can read more about configuring Azure CNI [here](https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni).
 
-[images/virtual-network.png]
+In this lab we are going to create an address space like the following:
+
+![image](images/virtual-network.png)
 
 > [!NOTE] 
-    > This exercise does not consider the Network Security Groups between the subnets, but they should be considered in a production environment.
+    > The scope of this lab does not include the Network Security Groups between the subnets, but they should be considered in a production environment.
+
+
 
 1. Before you can start creating resources, you must log in to your Azure account:
 
@@ -43,6 +47,10 @@ In real life situations there will already be a defined network space to allocat
   ```
 
 2. Run the script to create the virtual network [create-vnet.ps1](Scripts/create-vnet.ps1).
+
+## Create Application Gateway
+
+The app Gateway will be the gate to your cluster, it will receive incoming traffic from the Internet, will provide SSL termination if you configure it with an SSL certificate, and will redirect traffic to any internal IP address as long as it can reach out to it. You won't need the gateway right away, but because it takes some time to create it's better to do it at this point and configure its settings later. Run the script [create-app-gateway.ps1](Scripts/create-app-gateway.ps1), make sure to fill in the parameters and comment out the parameter ```--servers``` since we don't know the cluster's IP yet.
 
 ## Create AKS cluster
 
@@ -97,9 +105,11 @@ In real life situations there will already be a defined network space to allocat
     docker push <you-login-server>.azurecr.io/aksworkshop/frontend-api
     ```
 
-14. Install an internal instance of nginx in the cluster using Helm. Run the script [helm-install-nginx-internal.ps1](Scripts/helm-install-nginx-internal.ps1).
+14. Install an internal instance of nginx in the cluster using Helm. By default, an NGINX controller is created with a dynamic public IP address assignment. To assign a private IP within your virtual network you will need a YAML file like [ingress-internal.yaml](Templates/ingress-internal.yaml). Make sure to provide your own IP address, and use one that has not yet been assigned. Run the script [helm-install-nginx-internal.ps1](Scripts/helm-install-nginx-internal.ps1).
+    > [!HINT] 
+    > Check the cluster resource group and notive how a new load balancer with an internal IP address was created..
 
-14. Create a deployment, service and ingress controller YAML files for the frontend API. It should comply with the following requirements:
+15. Create a deployment, service and ingress controller YAML files for the frontend API. It should comply with the following requirements:
     * At least 2 replicas
     * Liveness and readiness probes pointing to the swagger page (/swagger/index.html)
     * Resources requests and limits
@@ -108,9 +118,9 @@ In real life situations there will already be a defined network space to allocat
         * ApplicationInsights__InstrumentationKey: instrumentation key for an Application Insights resource
     * Must not be exposed to the Internet.
 
-15. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/Helm/) provided in this lab. It is recommended to use Azure DevOps since releases will be automated that way. You can use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
+16. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/Helm/) provided in this lab. It is recommended to use Azure DevOps since releases will be automated that way. You can use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
 
-16. Use the command ```kubectl port-forward``` to test the Frontend API using the Swagger page.
+17. Use the command ```kubectl port-forward``` to test the Frontend API using the Swagger page.
     ```
         kubectl port-forward --namespace default svc/<frontend-service-name> 8080:80;
     ```
