@@ -15,7 +15,6 @@ This is a walkthrough to create an Azure Kubernetes Service cluster in a product
 
 * Docker [download](https://docs.docker.com/docker-for-windows/install/)
 * MongoDB Compass Community [download](https://docs.mongodb.com/compass/master/install/)
-* Get started with Docker for Windows [here](https://docs.docker.com/docker-for-windows/)
 * Install VS Code [here](https://code.visualstudio.com/download)
 * Install Azure CLI [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 * Install Azure AKS CLI [here](https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-install-cli)
@@ -25,7 +24,7 @@ This is a walkthrough to create an Azure Kubernetes Service cluster in a product
 
 ## Create virtual network
 
-By default, AKS clusters creates uses [kubenet](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#kubenet) to create the virtual network and subnet, but that is rarely the case in real life scenarios. Most of the times the cluster will need to coexist and interact with other services and more importantly be governed by company networking policies. The alternative is to use [Azure Container Networking Interface (CNI)](https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni), where every pod gets an IP address from a subnet and can be accessed directly. This requires the virtual network address space to be carefully planned in advance. You can read more about configuring Azure CNI [here](https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni).
+By default, AKS clusters use [kubenet](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#kubenet) to create the virtual network and subnet, but that is rarely the case in real life scenarios. Most of the times the cluster will need to coexist and interact with other services and more importantly, be governed by company networking policies. The alternative is to use [Azure Container Networking Interface (CNI)](https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni), where the cluster requires an existing virtual network and subnet to be allocated. This requires the virtual network address space to be carefully planned in advance. You can read more about configuring Azure CNI [here](https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni).
 
 In this lab we are going to create an address space like the following:
 
@@ -43,7 +42,7 @@ In this lab we are going to create an address space like the following:
   az account set --subscription <your subscription name>
 
   #create resource group
-  az group create --name <your rg name> --location eastus
+  az group create --name <your rg name> --location <your location>
   ```
 
 2. Run the script to create the virtual network [create-vnet.ps1](Scripts/create-vnet.ps1).
@@ -74,7 +73,7 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 8. Log in to the contrainer registry, go to the Azure portal and find the login server, username and one of the keys. Then run the command ```docker login <login-server> -u <username> -p <password>```.
 
 9. Pull the Backend API docker image and push it to your registry:
-    ```
+    ```powershell
     docker pull aksworkshopregistry.azurecr.io/aksworkshop/backend-api
     docker tag aksworkshopregistry.azurecr.io/aksworkshop/backend-api <you-login-server>.azurecr.io/aksworkshop/backend-api
     docker push <you-login-server>.azurecr.io/aksworkshop/backend-api
@@ -94,12 +93,12 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 11. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/BackendApi/Helm/) provided in this lab. It is recommended to use Azure DevOps since releases will be automated that way. You can use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
 
 12. Use the command ```kubectl port-forward``` to test the Backend API using the Swagger page.
-    ```
+    ```powershell
     kubectl port-forward --namespace default svc/<backend-service-name> 8080:80;
     ```
 
 13. Pull the Frontend API docker image and push it to your registry:
-    ```
+    ```powershell
     docker pull aksworkshopregistry.azurecr.io/aksworkshop/frontend-api
     docker tag aksworkshopregistry.azurecr.io/aksworkshop/frontend-api <you-login-server>.azurecr.io/aksworkshop/frontend-api
     docker push <you-login-server>.azurecr.io/aksworkshop/frontend-api
@@ -107,7 +106,7 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 
 14. Install an internal instance of nginx in the cluster using Helm. By default, an NGINX controller is created with a dynamic public IP address assignment. To assign a private IP within your virtual network you will need a YAML file like [ingress-internal.yaml](Templates/ingress-internal.yaml). Make sure to provide your own IP address, and use one that has not yet been assigned. Run the script [helm-install-nginx-internal.ps1](Scripts/helm-install-nginx-internal.ps1).
     > [!HINT] 
-    > Check the cluster resource group and notive how a new load balancer with an internal IP address was created..
+    > Check the cluster resource group and notice that a new load balancer with an internal IP address was created.
 
 15. Create a deployment, service and ingress controller YAML files for the frontend API. It should comply with the following requirements:
     * At least 2 replicas
@@ -121,7 +120,18 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 16. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/Helm/) provided in this lab. It is recommended to use Azure DevOps since releases will be automated that way. You can use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
 
 17. Use the command ```kubectl port-forward``` to test the Frontend API using the Swagger page.
-    ```
+    ```powershell
         kubectl port-forward --namespace default svc/<frontend-service-name> 8080:80;
     ```
 
+18. Now that you have a frontend service using the internal IP from the ingress controller, you can go back to the App Gateway and finish its configuration.
+    a. Go to the App Gateway resource in the Azure portal.
+    b. Create an HTTP setting with all its default values. Make sure it uses port 80.
+    c. Create a backend pool of the type **IP Address or FQDN**, add the ingress controller's IP address and assign the rule you jsut created.
+    e. Try accessing the App Gateway's public IP via HTTP, you should get to the frontend's home page.
+
+## Next Steps
+
+At this point it is up to you if you want to play any further with the App Gateway to check SSL termination and firewall settings to protect your application, or if you want to create your own firewalls (ie: Palo Alto) inside the virtual network and redirect traffic to them.
+
+You can also try creating NSGs for every subnet and isolate traffic to specific sources. For example you could allow access to the cluster network only from the App Gateway subnet and deny everything else, and you can whitelist the external IP addresses that can reach out to your App Gateway for additional security.
