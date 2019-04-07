@@ -1,4 +1,4 @@
-# AksWorkshop
+# AKS Workshop
 This is a walkthrough to create an Azure Kubernetes Service cluster in a production-like situation. It focuses in the following cases:
 
 * Set up a virtual network for multiple workloads
@@ -10,10 +10,17 @@ This is a walkthrough to create an Azure Kubernetes Service cluster in a product
 
 ## Pre-requisites
 
+> [!NOTE]
+    > You can choose not to install any CLI on your computer and either create an [Azure data Science VM](https://docs.microsoft.com/en-us/azure/machine-learning/data-science-virtual-machine/provision-vm), or use the [Azure Cloud Shell](https://shell.azure.com).
+
 * Docker [download](https://docs.docker.com/docker-for-windows/install/)
 * Get started with Docker for Windows [here](https://docs.docker.com/docker-for-windows/)
-* Clone this repo ```git clone https://github.com/marvin-garcia/AksWorkshop.git```
 * Install VS Code [here](https://code.visualstudio.com/download)
+* Install Azure CLI [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+* Install Azure AKS CLI [here](https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-install-cli)
+* Install Helm [here](https://helm.sh/docs/using_helm/#installing-helm)
+
+* Clone this repo, ```git clone https://github.com/marvin-garcia/AksWorkshop.git```
 
 ## Create virtual network
 
@@ -48,3 +55,7 @@ In real life situations there will already be a defined network space to allocat
 3. Run the script [create-aks.ps1](Scripts/create-aks.ps1) to create the AKS cluster You can read more about the command az aks create [here](https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create).
 
 4. Once the cluster has been created, Download the credentials to your cluster by running the script [get-aks-credentials.ps1](Scripts/get-aks-credentials.ps1).
+
+5. For this project you will need an instance of MongoDB in the cluster. The recommended way of doing so is using Helm. Helm is a Kubernetes package manager and it has a MongoDB chart that is replicated and horizontally scalable. Because the cluster was created with RBAC enabled, you have to create the appropriate ServiceAccount for Tiller (the server side Helm component) to use. Run the script [helm-init.ps1](Scripts/helm-init.ps1).
+
+6. Deploy a highly available instance of MongoDB in the cluster. Run the script [helm-install-mongo.ps1](Scripts/helm-install-mongo.ps1). Take note of the MongoDB service FQDN, you will need it later in the lab.
