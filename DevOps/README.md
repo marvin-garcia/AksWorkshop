@@ -7,3 +7,10 @@ Go to [Backend-CI.md](Backend-CI.md).
 
 ## Backend CD pipeline
 Go to [Backend-CD.md](Backend-CD.md).
+
+## Frontend CI pipeline
+Go to [Frontend-CI.md](Backend-CI.md).
+
+## Frontend CD pipeline
+Go to [Frontend-CD.md](Backend-CD.md).
+
