@@ -90,7 +90,7 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
         * ApplicationInsights__InstrumentationKey: instrumentation key for an Application Insights resource
     * Must not be exposed to the Internet.
 
-11. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/BackendApi/Helm/) provided in this lab. It is recommended to use Azure DevOps since releases will be automated that way. You can use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
+11. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/BackendApi/Helm/) provided in this lab. It is recommended to use [Azure DevOps](DevOps/README.md) since releases will be automated that way. You can also use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
 
 12. Use the command ```kubectl port-forward``` to test the Backend API using the Swagger page.
     ```powershell
@@ -117,7 +117,7 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
         * ApplicationInsights__InstrumentationKey: instrumentation key for an Application Insights resource
     * Must not be exposed to the Internet.
 
-16. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/Helm/) provided in this lab. It is recommended to use Azure DevOps since releases will be automated that way. You can use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
+16. Create the deployment and service in the cluster. You may use the command ```kubectl apply```, Helm charts or Azure DevOps to manage the release. If you have time constraints, just use the [templates](MultitierApi/Helm/) provided in this lab. It is recommended to use [Azure DevOps](DevOps/README.md) since releases will be automated that way. You can also use the script [helm-create-release.ps1](Scripts/helm-create-release.ps1) to push releases manually to the cluster.
 
 17. Use the command ```kubectl port-forward``` to test the Frontend API using the Swagger page.
     ```powershell
