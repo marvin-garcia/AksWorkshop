@@ -69,9 +69,7 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 5. Create a Container Registry to own the Docker images. Run the script [create-acr.ps1](Scripts/create-acr.ps1). You will need to ensure the cluster can pull images from your registry, there are two ways of accomplishing this task: Create a secret object in the cluster with the container registry key, or grant the service principal pull access to the registry. In this case we will do the latter, run the script [grant-aks-acr-access.ps1](Scripts/grant-aks-acr-access.ps1).
 
 6. Log in to the contrainer registry, go to the Azure portal and find the login server, username and one of the keys. Then run the command ```docker login <login-server> -u <username> -p <password>```.
-
-
-
+<br /><br />
 ![image](images/microservices.png)
 
 ## Deploy MongoDB
