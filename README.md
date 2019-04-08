@@ -70,6 +70,8 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 
 6. Log in to the contrainer registry, go to the Azure portal and find the login server, username and one of the keys. Then run the command ```docker login <login-server> -u <username> -p <password>```.
 
+![image](images/microservices.png)
+
 ## Deploy MongoDB
 
 7. For this project you will need an instance of MongoDB in the cluster. The recommended way of doing so is using Helm. Helm is a Kubernetes package manager and it has a MongoDB chart that is replicated and horizontally scalable. Because the cluster was created with RBAC enabled, you have to create the appropriate ServiceAccount for Tiller (the server side Helm component) to use. Run the script [helm-init.ps1](Scripts/helm-init.ps1).
