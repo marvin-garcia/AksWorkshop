@@ -64,13 +64,19 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 
 4. Once the cluster has been created, Download the credentials to your cluster by running the script [get-aks-credentials.ps1](Scripts/get-aks-credentials.ps1).
 
-5. For this project you will need an instance of MongoDB in the cluster. The recommended way of doing so is using Helm. Helm is a Kubernetes package manager and it has a MongoDB chart that is replicated and horizontally scalable. Because the cluster was created with RBAC enabled, you have to create the appropriate ServiceAccount for Tiller (the server side Helm component) to use. Run the script [helm-init.ps1](Scripts/helm-init.ps1).
+### Create Container Registry
 
-6. Deploy a highly available instance of MongoDB in the cluster. Run the script [helm-install-mongo.ps1](Scripts/helm-install-mongo.ps1). Take note of the MongoDB service FQDN, you will need it later in the lab. Follow the instructions in the output to connect to the database from outside the cluster, then use MongoDB Compass Community to create a database and a collection.
+5. Create a Container Registry to own the Docker images. Run the script [create-acr.ps1](Scripts/create-acr.ps1). You will need to ensure the cluster can pull images from your registry, there are two ways of accomplishing this task: Create a secret object in the cluster with the container registry key, or grant the service principal pull access to the registry. In this case we will do the latter, run the script [grant-aks-acr-access.ps1](Scripts/grant-aks-acr-access.ps1).
 
-7. Create a Container Registry to own the Docker images. Run the script [create-acr.ps1](Scripts/create-acr.ps1). You will need to ensure the cluster can pull images from your registry, there are two ways of accomplishing this task: Create a secret object in the cluster with the container registry key, or grant the service principal pull access to the registry. In this case we will do the latter, run the script [grant-aks-acr-access.ps1](Scripts/grant-aks-acr-access.ps1).
+6. Log in to the contrainer registry, go to the Azure portal and find the login server, username and one of the keys. Then run the command ```docker login <login-server> -u <username> -p <password>```.
 
-8. Log in to the contrainer registry, go to the Azure portal and find the login server, username and one of the keys. Then run the command ```docker login <login-server> -u <username> -p <password>```.
+### Deploy MongoDB
+
+7. For this project you will need an instance of MongoDB in the cluster. The recommended way of doing so is using Helm. Helm is a Kubernetes package manager and it has a MongoDB chart that is replicated and horizontally scalable. Because the cluster was created with RBAC enabled, you have to create the appropriate ServiceAccount for Tiller (the server side Helm component) to use. Run the script [helm-init.ps1](Scripts/helm-init.ps1).
+
+8. Deploy a highly available instance of MongoDB in the cluster. Run the script [helm-install-mongo.ps1](Scripts/helm-install-mongo.ps1). Take note of the MongoDB service FQDN, you will need it later in the lab. Follow the instructions in the output to connect to the database from outside the cluster, then use MongoDB Compass Community to create a database and a collection.
+
+### Deploy Backend API
 
 9. Pull the Backend API docker image and push it to your registry:
     ```powershell
@@ -96,6 +102,8 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
     ```powershell
     kubectl port-forward --namespace default svc/<backend-service-name> 8080:80;
     ```
+
+### Deploy Frontend API
 
 13. Pull the Frontend API docker image and push it to your registry:
     ```powershell
@@ -123,6 +131,8 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
     ```powershell
         kubectl port-forward --namespace default svc/<frontend-service-name> 8080:80;
     ```
+
+### Configure App Gateway
 
 18. Now that you have a frontend service using the internal IP from the ingress controller, you can go back to the App Gateway and finish its configuration.
     a. Go to the App Gateway resource in the Azure portal.
