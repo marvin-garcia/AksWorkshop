@@ -70,6 +70,8 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 
 6. Log in to the contrainer registry, go to the Azure portal and find the login server, username and one of the keys. Then run the command ```docker login <login-server> -u <username> -p <password>```.
 
+
+
 ![image](images/microservices.png)
 
 ## Deploy MongoDB
