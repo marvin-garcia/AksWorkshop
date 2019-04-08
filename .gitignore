@@ -333,3 +333,4 @@ ASALocalRun/
 /MultitierApi/BackendApi/azds.yaml
 /MultitierApi/BackendApi/Dockerfile.develop
 /MultitierApi/BackendApi/charts/backendapi
+service-principal-creds.txt
