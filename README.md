@@ -82,10 +82,10 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 
 ### Deploy Backend API
 
-9. Pull the Backend API docker image and push it to your registry:
+9. In a real life scenario you will own your Docker images, so in the next step you will have to pull the backend image and push it to your new container registry:
     ```powershell
-    docker pull aksworkshopregistry.azurecr.io/aksworkshop/backend-api
-    docker tag aksworkshopregistry.azurecr.io/aksworkshop/backend-api <you-login-server>.azurecr.io/aksworkshop/backend-api
+    docker pull marvingarcia/todo-backend-api
+    docker tag marvingarcia/todo-backend-api <you-login-server>.azurecr.io/aksworkshop/backend-api
     docker push <you-login-server>.azurecr.io/aksworkshop/backend-api
     ```
 
@@ -111,8 +111,8 @@ The app Gateway will be the gate to your cluster, it will receive incoming traff
 
 13. Pull the Frontend API docker image and push it to your registry:
     ```powershell
-    docker pull aksworkshopregistry.azurecr.io/aksworkshop/frontend-api
-    docker tag aksworkshopregistry.azurecr.io/aksworkshop/frontend-api <you-login-server>.azurecr.io/aksworkshop/frontend-api
+    docker pull marvingarcia/todo-frontend-api
+    docker tag marvingarcia/todo-frontend-api <you-login-server>.azurecr.io/aksworkshop/frontend-api
     docker push <you-login-server>.azurecr.io/aksworkshop/frontend-api
     ```
 
