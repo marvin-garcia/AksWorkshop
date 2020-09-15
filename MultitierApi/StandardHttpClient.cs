@@ -10,6 +10,7 @@ namespace FrontendApi
 {
     public interface IHttpClient
     {
+        void SetAuthorization(string schema, string parameter);
         Task<string> GetStringAsync(string uri);
         Task<HttpResponseMessage> PostAsync<T>(string uri, T item, string requestId = null);
         Task<HttpResponseMessage> DeleteAsync(string uri, string requestId = null);
@@ -22,11 +23,16 @@ namespace FrontendApi
         private ILogger<StandardHttpClient> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public StandardHttpClient(ILogger<StandardHttpClient> logger, IHttpContextAccessor httpContextAccessor)
+        public StandardHttpClient(HttpClient httpClient, ILogger<StandardHttpClient> logger, IHttpContextAccessor httpContextAccessor)
         {
-            _client = new HttpClient();
+            _client = httpClient;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public void SetAuthorization(string schema, string parameter)
+        {
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(schema, parameter);
         }
 
         public async Task<string> GetStringAsync(string uri)

@@ -7,6 +7,9 @@ using Autofac.Extensions.DependencyInjection;
 using System;
 using Microsoft.AspNetCore.Http;
 using FrontendApi.Repositories;
+using Polly;
+using System.Net.Http;
+using Polly.Extensions.Http;
 
 namespace FrontendApi
 {
@@ -19,18 +22,42 @@ namespace FrontendApi
             Configuration = configuration;
         }
 
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            //return HttpPolicyExtensions
+            //    .HandleTransientHttpError()
+            //    .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+            //    .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+            Random jitterer = new Random();
+            var retryWithJitterPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(6, // exponential back-off plus some jitter
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                                    + TimeSpan.FromMilliseconds(jitterer.Next(0, 100))
+                );
+
+            return retryWithJitterPolicy;
+        }
+        
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IConfiguration>(Configuration);
-            services.AddSingleton<IHttpClient, StandardHttpClient>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<ITodoRepository, TodoRepository>();
-            services.AddMvc(); //.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddSingleton<IConfiguration>(Configuration)
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddTransient<ITodoRepository, TodoRepository>()
+                .AddMvc();
+
+            services
+                .AddHttpClient<IHttpClient, StandardHttpClient>()
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                .AddPolicyHandler(GetRetryPolicy());
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Todo Frontend API", Version = "v1" });
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Todo Frontend API", Version = "v1" });
             });
 
             var container = new ContainerBuilder();
